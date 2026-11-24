@@ -34,6 +34,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import com.google.firebase.analytics.FirebaseAnalytics
 import timber.log.Timber
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -136,6 +137,10 @@ class PlaybackService : MediaLibraryService() {
             .setSessionActivity(openApp)
             .build()
         listens = ListenTracker(player, container.library).also(player::addListener)
+        if (container.firebaseConfigured) {
+            val analytics = FirebaseAnalytics.getInstance(this)
+            player.addListener(StartWatch(player, scope, ::isCasting, analytics::logEvent))
+        }
 
         setMediaNotificationProvider(
             DefaultMediaNotificationProvider.Builder(this).build().apply { setSmallIcon(R.drawable.ic_notification) },

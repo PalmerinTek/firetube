@@ -24,9 +24,11 @@ import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQu
 import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeTrendingMusicLinkHandlerFactory
 import org.schabi.newpipe.extractor.stream.AudioStream
 import org.schabi.newpipe.extractor.stream.DeliveryMethod
+import org.schabi.newpipe.extractor.stream.Stream
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import org.schabi.newpipe.extractor.stream.StreamType
+import org.schabi.newpipe.extractor.stream.VideoStream
 import org.schabi.newpipe.extractor.Page as NpPage
 
 /** [StreamSource] backed by NewPipeExtractor's YouTube service. */
@@ -82,13 +84,16 @@ class NewPipeStreamSource(
                 live = true,
             )
         }
-        val audio = pickAudio(info.audioStreams, preferLowBitrate)
+        // Some uploads (often new ones on small channels) come only as a single 360p video+audio
+        // MP4, with no audio-only formats. The player keeps just its audio.
+        val audio: Stream = pickAudio(info.audioStreams, preferLowBitrate)
+            ?: pickMuxed(info.videoStreams)
             ?: throw ExtractionException("No playable audio stream for $trackId")
         ResolvedStream(
             trackId = trackId,
             url = audio.content,
             mimeType = audio.format?.mimeType,
-            bitrate = audio.averageBitrate,
+            bitrate = (audio as? AudioStream)?.averageBitrate ?: 0,
             expiresAtMillis = expiryOf(audio.content),
             related = related,
             track = track,
@@ -221,6 +226,11 @@ class NewPipeStreamSource(
                 .thenBy { if (preferLowBitrate) -it.averageBitrate else it.averageBitrate }
             return original.ifEmpty { progressive }.maxWithOrNull(byPreference)
         }
+
+        /** The fallback when there's no audio-only stream: the smallest progressive video+audio MP4. */
+        internal fun pickMuxed(streams: List<VideoStream>): VideoStream? = streams
+            .filter { it.isUrl && it.deliveryMethod == DeliveryMethod.PROGRESSIVE_HTTP && !it.isVideoOnly }
+            .minWithOrNull(compareBy<VideoStream> { if (it.format == MediaFormat.MPEG_4) 0 else 1 }.thenBy { it.getResolution().takeWhile(Char::isDigit).toIntOrNull() ?: Int.MAX_VALUE })
 
         internal fun expiryOf(url: String): Long {
             val parsed = url.toHttpUrlOrNull()
