@@ -4,7 +4,7 @@ title: FireTube privacy policy
 
 # FireTube privacy policy
 
-_Last updated: October 4, 2026_
+_Last updated: November 23, 2026_
 
 FireTube is a free, open-source music player with no ads. This policy explains what data the official builds (from [GitHub Releases](https://github.com/PalmerinTek/firetube/releases)) handle.
 
@@ -14,7 +14,11 @@ Your playlists, listening history (including the play counts and listening time 
 
 ## Crash reports
 
-Crash reports are on by default. When the app crashes, it sends a crash report to Google Firebase Crashlytics. A report contains the device model, Android version, app version and technical details about the crash. It doesn't contain your name, your email address or what you were listening to. You can turn crash reports off in **Settings**.
+Crash reports are on by default. When the app crashes, it sends a crash report to Google Firebase Crashlytics. A report contains the device model, Android version, app version and technical details about the crash. It doesn't contain your name, your email address or what you were listening to.
+
+With the same setting, when a song doesn't start playing within 10 seconds, FireTube sends a report to Google Firebase Analytics so the problem can be fixed. It contains that song's YouTube video ID, title and artist, the player's state and error code, and whether it was a live stream or cast. Firebase adds the device model, Android version, app version, country and an app-instance identifier. It doesn't contain your name, your email address or an advertising ID, and FireTube sends no other analytics.
+
+You can turn both off in **Settings**.
 
 ## Google sign-in and playlist sync (optional)
 
@@ -31,7 +35,7 @@ FireTube connects directly to these services:
 - **LRCLIB** (lrclib.net), only when you open lyrics. It receives the song's title, artist and length.
 - **GitHub**, to check for app updates. See the [GitHub privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 - **Google Cast**, only when you cast. The Cast device plays audio streamed from your phone over your local network, and the Cast framework communicates with Google.
-- **Google Firebase**, for crash reports and the optional sign-in and sync described above.
+- **Google Firebase**, for crash reports, reports of songs that didn't start, and the optional sign-in and sync described above.
 
 FireTube doesn't sell or share your data, and it doesn't show ads.
 

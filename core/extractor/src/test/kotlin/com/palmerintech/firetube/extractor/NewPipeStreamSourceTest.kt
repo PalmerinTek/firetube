@@ -4,6 +4,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.schabi.newpipe.extractor.MediaFormat
+import org.schabi.newpipe.extractor.stream.DeliveryMethod
+import org.schabi.newpipe.extractor.stream.VideoStream
 
 /** Offline tests for the helpers; see [NewPipeStreamSourceLiveTest] for the real thing. */
 class NewPipeStreamSourceTest {
@@ -52,6 +55,21 @@ class NewPipeStreamSourceTest {
         assertEquals(chart.take(10).toSet(), monday.take(10).toSet())
         assertEquals(monday, NewPipeStreamSource.dailyMix(chart, 20_000))
         assertTrue(monday != NewPipeStreamSource.dailyMix(chart, 20_001))
+    }
+
+    @Test
+    fun muxedFallbackPicksTheSmallestProgressiveMp4() {
+        fun video(id: String, format: MediaFormat, res: String, videoOnly: Boolean = false, method: DeliveryMethod = DeliveryMethod.PROGRESSIVE_HTTP) =
+            VideoStream.Builder().setId(id).setContent("https://example.com/$id", true).setMediaFormat(format)
+                .setResolution(res).setIsVideoOnly(videoOnly).setDeliveryMethod(method).build()
+        val picked = NewPipeStreamSource.pickMuxed(listOf(
+            video("720", MediaFormat.MPEG_4, "720p"),
+            video("360", MediaFormat.MPEG_4, "360p"),
+            video("144only", MediaFormat.MPEG_4, "144p", videoOnly = true),
+            video("hls", MediaFormat.MPEG_4, "144p", method = DeliveryMethod.HLS),
+        ))
+        assertEquals("360", picked?.id)
+        assertNull(NewPipeStreamSource.pickMuxed(emptyList()))
     }
 
     @Test

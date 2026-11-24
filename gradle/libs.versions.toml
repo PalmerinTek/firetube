@@ -77,6 +77,7 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 androidx-palette = { module = "androidx.palette:palette-ktx", version.ref = "palette" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }

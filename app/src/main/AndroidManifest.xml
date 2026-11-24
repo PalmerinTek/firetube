@@ -108,6 +108,21 @@
             </intent-filter>
         </service>
 
+        <!-- Analytics: off until FireTubeApp applies the crash-reports setting; only our own
+             events (songs that didn't start), no ad ID or automatic screen tracking. -->
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_automatic_screen_reporting_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_default_allow_ad_personalization_signals"
+            android:value="false" />
+
         <!-- Chromecast (Default Media Receiver) -->
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
